@@ -6,7 +6,9 @@
 		"build:node": "tsc",
 		"build:web": "vite build",
 		"build:demo": "vite build --mode=demo",
-		"build": "run-p build:*"
+		"build": "run-p build:*",
+		"ci": "yarn install --immutable --immutable-cache --check-cache",
+		"clean": "rm -rf docs dist build"
 	},
 	"devDependencies": {
 		"@types/node": "^17.0.16",
