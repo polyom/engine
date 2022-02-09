@@ -15,7 +15,7 @@ jobs:
       - run: |
           yarn ci && yarn clean
           yarn build
-          gid add -f docs dist build
+          git add -f docs dist build
       - name: Push
         env:
           MESSAGE: ${{ github.event.head_commit.message }}
