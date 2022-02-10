@@ -77,7 +77,7 @@ window.onkeyup = ({ key }) => {
 };
 
 function color(id: number) {
-	return `hsl(${(id / engine.pieces.length) * 360}, 100%, 75%)`;
+	return `hsl(${(id / engine.pieces.length) * 360}, 100%, 85%)`;
 }
 
 function drawShape(
@@ -102,9 +102,9 @@ function drawShape(
 }
 
 function render() {
-	hold.fillStyle = "#111";
-	board.fillStyle = "#111";
-	queue.fillStyle = "#111";
+	hold.fillStyle = "#000";
+	board.fillStyle = "#000";
+	queue.fillStyle = "#000";
 	hold.fillRect(0, 0, holdCanvas.width, holdCanvas.height);
 	board.fillRect(0, 0, boardCanvas.width, boardCanvas.height);
 	queue.fillRect(0, 0, queueCanvas.width, queueCanvas.height);
