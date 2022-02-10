@@ -59,7 +59,7 @@ export class Machine {
 		return this.try(() => this.y++, true);
 	}
 
-	shift(dx: number, dy: number) {
+	move(dx: number, dy: number) {
 		return this.trySet(this.x + dx, this.y + dy);
 	}
 
@@ -98,7 +98,7 @@ export class Machine {
 	}
 
 	drop() {
-		while (this.shift(0, 1));
+		while (this.move(0, 1));
 		this.lock();
 		this.spawn();
 	}

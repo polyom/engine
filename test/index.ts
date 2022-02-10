@@ -43,11 +43,11 @@ window.onkeydown = ({ key }) => {
 			return controller.startHold();
 		case " ":
 			return controller.startHardDrop();
-		case "ArrowUp":
 		case "z":
-			return controller.startRotateRight();
-		case "x":
 			return controller.startRotateLeft();
+		case "ArrowUp":
+		case "x":
+			return controller.startRotateRight();
 		case "ArrowDown":
 			return controller.startSoftDrop();
 		default:
@@ -63,11 +63,11 @@ window.onkeyup = ({ key }) => {
 			return controller.stopSlideRight();
 		case "ArrowDown":
 			return controller.stopSoftDrop();
-		case "ArrowUp":
 		case "z":
-			return controller.stopRotateRight();
-		case "x":
 			return controller.stopRotateLeft();
+		case "ArrowUp":
+		case "x":
+			return controller.stopRotateRight();
 		case "c":
 			return controller.stopHold();
 		case " ":

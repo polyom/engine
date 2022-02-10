@@ -34,7 +34,7 @@ export type Handling = {
 };
 
 export type Events = {
-	shift: ((dx: number, dy: number, ok: boolean) => void)[];
+	move: ((dx: number, dy: number, ok: boolean) => void)[];
 	rotate: ((dd: number, ok: boolean) => void)[];
 	hold: ((ok: boolean) => void)[];
 	clear: ((lines: number[]) => void)[];

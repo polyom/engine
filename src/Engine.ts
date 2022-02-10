@@ -12,7 +12,7 @@ export class Engine extends Machine {
 	events: Events = {
 		hold: [],
 		clear: [],
-		shift: [],
+		move: [],
 		lock: [],
 		rotate: [],
 		tick: [],
@@ -70,9 +70,9 @@ export class Engine extends Machine {
 		return ok;
 	}
 
-	shift(dx: number, dy: number) {
-		const ok = super.shift(dx, dy);
-		this.emit("shift", dx, dy, ok);
+	move(dx: number, dy: number) {
+		const ok = super.move(dx, dy);
+		this.emit("move", dx, dy, ok);
 		return ok;
 	}
 
@@ -84,7 +84,7 @@ export class Engine extends Machine {
 
 	slide(dx: number) {
 		return this.stall(() => {
-			const ok = super.shift(dx, 0);
+			const ok = super.move(dx, 0);
 			this.emit("slide", dx, ok);
 			return ok;
 		});
@@ -108,7 +108,7 @@ export class Engine extends Machine {
 				this.lockTimer = null;
 			}, this.lockDelay);
 		} else {
-			this.shift(0, 1);
+			this.move(0, 1);
 		}
 		this.emit("tick");
 	}
