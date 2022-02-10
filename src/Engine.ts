@@ -3,10 +3,11 @@ import { Events } from "./types";
 
 export class Engine extends Machine {
 	fall = 1000;
+	lockDelay = 500;
 	tickTimer = null as any;
 	lockTimer = null as any;
 	stalls = 0;
-	maxStalls = 3;
+	maxStalls = 16;
 
 	events: Events = {
 		hold: [],
@@ -15,7 +16,15 @@ export class Engine extends Machine {
 		lock: [],
 		rotate: [],
 		tick: [],
+		spawn: [],
+		slide: [],
 	};
+
+	spawn(i?: number) {
+		const ok = super.spawn(i);
+		this.emit("spawn", this.shape(), this.x, this.y, this.d, ok);
+		return ok;
+	}
 
 	emit<N extends keyof Events>(
 		name: N,
@@ -42,23 +51,28 @@ export class Engine extends Machine {
 		this.emit("lock");
 	}
 
-	stall() {
+	stall(fn: () => boolean) {
+		const { floating } = this;
+		const ok = fn();
+		if (!ok) return ok;
+
+		if (!floating) this.stalls++;
+		if (this.stalls >= this.maxStalls && !this.floating) {
+			this.stalls = 0;
+			this.lock();
+			this.spawn();
+		}
 		if (this.lockTimer) {
 			clearTimeout(this.lockTimer);
 			this.lockTimer = null;
-			this.stalls++;
-			if (this.stalls > this.maxStalls && !this.floating) {
-				this.stalls = 0;
-				this.lock();
-				this.spawn();
-			}
 		}
+
+		return ok;
 	}
 
 	shift(dx: number, dy: number) {
 		const ok = super.shift(dx, dy);
 		this.emit("shift", dx, dy, ok);
-		if (ok) this.stall();
 		return ok;
 	}
 
@@ -68,11 +82,20 @@ export class Engine extends Machine {
 		return lines;
 	}
 
-	rotate(dd: -1 | 1) {
-		const ok = super.rotate(dd);
-		this.emit("rotate", dd, ok);
-		if (ok) this.stall();
-		return ok;
+	slide(dx: number) {
+		return this.stall(() => {
+			const ok = super.shift(dx, 0);
+			this.emit("slide", dx, ok);
+			return ok;
+		});
+	}
+
+	rotate(dd: number) {
+		return this.stall(() => {
+			const ok = super.rotate(dd);
+			this.emit("rotate", dd, ok);
+			return ok;
+		});
 	}
 
 	tick(immediate = false, fall = this.fall) {
@@ -83,7 +106,7 @@ export class Engine extends Machine {
 				this.lock();
 				this.spawn();
 				this.lockTimer = null;
-			}, this.fall);
+			}, this.lockDelay);
 		} else {
 			this.shift(0, 1);
 		}

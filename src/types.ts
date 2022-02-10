@@ -12,8 +12,6 @@ export interface Piece {
 
 export type Number2d = number[][];
 
-export type Direction = 0 | 1 | 2 | 3;
-
 export type ConfigPiece = {
 	offset?: Point;
 	shape: (0 | 1)[][];
@@ -42,4 +40,12 @@ export type Events = {
 	clear: ((lines: number[]) => void)[];
 	tick: (() => void)[];
 	lock: (() => void)[];
+	spawn: ((
+		shape: Shape,
+		x: number,
+		y: number,
+		d: number,
+		ok: boolean
+	) => void)[];
+	slide: ((dx: number, ok: boolean) => void)[];
 };

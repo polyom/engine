@@ -1,5 +1,4 @@
-import { Controller, Direction, Engine } from "../src";
-import { Shape } from "../src";
+import { Controller, Engine } from "../src";
 import { tetromino } from "./tetromino";
 
 const engine = new Engine(...tetromino);
@@ -30,7 +29,7 @@ const controller = new Controller(engine, {
 	das: 150,
 	arr: 50,
 	dcd: 6,
-	crt: false,
+	crt: true,
 	sdf: 10,
 });
 
@@ -85,17 +84,18 @@ function drawShape(
 	ox: number,
 	oy: number,
 	id: number,
-	d: Direction,
+	d: number,
 	ghost = false
 ) {
+	const shape = engine.shape(id, d);
 	if (ghost) {
 		ctx.strokeStyle = color(id);
-		for (let [x, y] of engine.pieces[id].shapes[d]) {
+		for (let [x, y] of shape) {
 			ctx.strokeRect((x + ox) * size, (y + oy) * size, size, size);
 		}
 	} else {
 		ctx.fillStyle = color(id);
-		for (let [x, y] of engine.pieces[id].shapes[d]) {
+		for (let [x, y] of shape) {
 			ctx.fillRect((x + ox) * size, (y + oy) * size, size, size);
 		}
 	}

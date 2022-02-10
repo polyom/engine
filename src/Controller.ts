@@ -34,16 +34,31 @@ export class Controller {
 		this.hardDrop = false;
 	}
 
-	startSlide(ms = this.handling.das) {
+	startSlide(ms = this.handling.das, dx = this.dx) {
 		if (!(this.slideLeft || this.slideRight)) return;
-		this.engine.shift(this.dx, 0);
-		this.arrTimer = setTimeout(() => this.startSlide(this.handling.arr), ms);
+
+		if (this.handling.crt && dx !== this.dx) {
+			clearTimeout(this.arrTimer);
+			this.arrTimer = null;
+			ms = this.handling.das;
+			dx = this.dx;
+		} else {
+			this.engine.slide(this.dx);
+		}
+
+		if (!this.arrTimer) {
+			this.arrTimer = setTimeout(() => {
+				this.arrTimer = null;
+				this.startSlide(this.handling.arr, dx);
+			}, ms);
+		}
 	}
 
 	stopSlide() {
 		this.dx = +this.slideRight - +this.slideLeft;
 		if (this.slideLeft || this.slideRight) return;
 		clearTimeout(this.arrTimer);
+		this.arrTimer = null;
 	}
 	startSlideLeft() {
 		if (this.slideLeft) return;

@@ -1,11 +1,13 @@
 import { createRandom } from "./createRandom";
-import { Direction, Number2d, Number4, Piece, Point } from "./types";
+import { Number2d, Number4, Piece, Point } from "./types";
+
+const mod = (a: number, b: number) => ((a % b) + b) % b;
 
 export class Machine {
 	x = 0;
 	y = 0;
 	i = -1;
-	d: Direction = 0;
+	d = 0;
 	board: Number2d;
 	bags: Number2d = [];
 	canHold = true;
@@ -29,21 +31,21 @@ export class Machine {
 		return this.bags.flat();
 	}
 
-	get shape() {
-		return this.pieces[this.i].shapes[this.d];
+	shape(i = this.i, d = this.d) {
+		return this.pieces[i].shapes[mod(d, 4)];
 	}
 
 	get ghostY() {
 		let y = 0;
 		this.try(() => {
-			while (this.shift(0, 1));
-			y = this.y;
+			while (this.valid()) this.y++;
+			y = this.y - 1;
 		}, true);
 		return y;
 	}
 
 	try(
-		fn: (x: number, y: number, d: Direction, i: number) => void,
+		fn: (x: number, y: number, d: number, i: number) => void,
 		test = false
 	): boolean {
 		const { x, y, d, i } = this;
@@ -61,37 +63,23 @@ export class Machine {
 		return this.trySet(this.x + dx, this.y + dy);
 	}
 
-	set(
-		x: number = this.x,
-		y: number = this.y,
-		d: Direction = this.d,
-		i: number = this.i
-	) {
+	set(x: number = this.x, y: number = this.y, d = this.d, i: number = this.i) {
 		(this.x = x), (this.y = y), (this.d = d), (this.i = i);
 	}
 
-	trySet(
-		x: number = this.x,
-		y: number = this.y,
-		d: Direction = this.d,
-		i: number = this.i
-	) {
+	trySet(x = this.x, y = this.y, d = this.d, i = this.i) {
 		return this.try(() => this.set(x, y, d, i));
 	}
 
-	rotate(dd: -1 | 1) {
-		const kick = this.pieces[this.i].kicks[this.d];
+	rotate(dd: number) {
+		const kick = this.pieces[this.i].kicks[mod(this.d, 4)];
 		return !!(dd < 0 ? kick.left : kick.right).find(([px, py]) => {
-			return this.trySet(
-				this.x + px,
-				this.y - py,
-				((this.d + dd + 4) % 4) as Direction
-			);
+			return this.trySet(this.x + px, this.y - py, this.d + dd);
 		});
 	}
 
 	valid() {
-		return this.shape.every(([x, y]) => {
+		return this.shape().every(([x, y]) => {
 			const bx = x + this.x,
 				by = y + this.y;
 			return (
@@ -105,7 +93,7 @@ export class Machine {
 	}
 
 	lock() {
-		for (const [x, y] of this.shape)
+		for (const [x, y] of this.shape())
 			this.board[this.y + y][this.x + x] = this.i;
 	}
 
@@ -116,7 +104,7 @@ export class Machine {
 	}
 
 	spawn(i: number = this.next()) {
-		return this.spawns.find(([x, y]) => this.trySet(x, y, 0, i));
+		return !!this.spawns.find(([x, y]) => this.trySet(x, y, 0, i));
 	}
 
 	next() {
