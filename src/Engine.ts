@@ -18,11 +18,18 @@ export class Engine extends Machine {
 		tick: [],
 		spawn: [],
 		slide: [],
+		set: [],
 	};
 
-	spawn(i?: number) {
+	set(x = this.x, y = this.y, d = this.d, i = this.i) {
+		const ok = super.set(x, y, d, i);
+		this.emit("set", x, y, d, ok);
+		return ok;
+	}
+
+	spawn(i: number = this.next()) {
 		const ok = super.spawn(i);
-		this.emit("spawn", this.shape(), this.x, this.y, this.d, ok);
+		this.emit("spawn", i, ok);
 		return ok;
 	}
 
@@ -46,6 +53,8 @@ export class Engine extends Machine {
 	}
 
 	lock() {
+		clearTimeout(this.lockTimer);
+		this.lockTimer = null;
 		super.lock();
 		this.clear();
 		this.emit("lock");
@@ -105,7 +114,6 @@ export class Engine extends Machine {
 			this.lockTimer = setTimeout(() => {
 				this.lock();
 				this.spawn();
-				this.lockTimer = null;
 			}, this.lockDelay);
 		} else {
 			this.move(0, 1);

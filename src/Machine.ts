@@ -51,7 +51,7 @@ export class Machine {
 		const { x, y, d, i } = this;
 		fn(x, y, d, i);
 		const valid = this.valid();
-		if (!valid || test) this.set(x, y, d, i);
+		if (!valid || test) this.hardSet(x, y, d, i);
 		return valid;
 	}
 
@@ -60,21 +60,21 @@ export class Machine {
 	}
 
 	move(dx: number, dy: number) {
-		return this.trySet(this.x + dx, this.y + dy);
+		return this.set(this.x + dx, this.y + dy);
 	}
 
-	set(x: number = this.x, y: number = this.y, d = this.d, i: number = this.i) {
+	hardSet(x: number = this.x, y: number = this.y, d = this.d, i: number = this.i) {
 		(this.x = x), (this.y = y), (this.d = d), (this.i = i);
 	}
 
-	trySet(x = this.x, y = this.y, d = this.d, i = this.i) {
-		return this.try(() => this.set(x, y, d, i));
+	set(x = this.x, y = this.y, d = this.d, i = this.i) {
+		return this.try(() => this.hardSet(x, y, d, i));
 	}
 
 	rotate(dd: number) {
 		const kick = this.pieces[this.i].kicks[mod(this.d, 4)];
 		return !!(dd < 0 ? kick.left : kick.right).find(([px, py]) => {
-			return this.trySet(this.x + px, this.y - py, this.d + dd);
+			return this.set(this.x + px, this.y - py, this.d + dd);
 		});
 	}
 
@@ -104,7 +104,7 @@ export class Machine {
 	}
 
 	spawn(i: number = this.next()) {
-		return !!this.spawns.find(([x, y]) => this.trySet(x, y, 0, i));
+		return !!this.spawns.find(([x, y]) => this.set(x, y, 0, i));
 	}
 
 	next() {

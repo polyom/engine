@@ -36,16 +36,11 @@ export type Handling = {
 export type Events = {
 	move: ((dx: number, dy: number, ok: boolean) => void)[];
 	rotate: ((dd: number, ok: boolean) => void)[];
+	set: ((x: number, y: number, d: number, ok: boolean) => void)[];
+	slide: ((dx: number, ok: boolean) => void)[];
+	spawn: ((i: number, ok: boolean) => void)[];
 	hold: ((ok: boolean) => void)[];
-	clear: ((lines: number[]) => void)[];
 	tick: (() => void)[];
 	lock: (() => void)[];
-	spawn: ((
-		shape: Shape,
-		x: number,
-		y: number,
-		d: number,
-		ok: boolean
-	) => void)[];
-	slide: ((dx: number, ok: boolean) => void)[];
+	clear: ((lines: number[]) => void)[];
 };
