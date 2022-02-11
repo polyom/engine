@@ -1,12 +1,12 @@
 import { Config, Number4, Shape, Shape4 } from "./types";
 
 export function fromConfig(
-	{ board: size, pieces, kickStore = {}, spawns }: Config,
+	{ board: size, pieces, kicks: store = {}, spawns }: Config,
 	seed: Number4
 ) {
 	const parsedPieces = pieces.map(
 		({ shape, kicks, offset: [ox, oy] = [0, 0] }) => ({
-			kicks: typeof kicks === "string" ? kickStore[kicks] : kicks,
+			kicks: typeof kicks === "string" ? store[kicks] : kicks,
 			shapes: [0, 0, 0, 0].map(() => {
 				const v: Shape = [];
 				shape.forEach((r, y) =>

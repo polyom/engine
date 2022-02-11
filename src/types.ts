@@ -21,7 +21,7 @@ export type ConfigPiece = {
 export type Config = {
 	board: Point;
 	spawns: Point[];
-	kickStore?: Record<string, Kick4>;
+	kicks?: Record<string, Kick4>;
 	pieces: ConfigPiece[];
 };
 

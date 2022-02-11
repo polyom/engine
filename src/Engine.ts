@@ -21,6 +21,13 @@ export class Engine extends Machine {
 		set: [],
 	};
 
+	hold() {
+		const ok = super.hold();
+		this.emit("hold", ok);
+		this.clearLockTimer();
+		return ok;
+	}
+
 	set(x = this.x, y = this.y, d = this.d, i = this.i) {
 		const ok = super.set(x, y, d, i);
 		this.emit("set", x, y, d, ok);
@@ -52,9 +59,13 @@ export class Engine extends Machine {
 		this.events[name].splice(this.events[name].indexOf(listener as any), 1);
 	}
 
-	lock() {
+	clearLockTimer() {
 		clearTimeout(this.lockTimer);
 		this.lockTimer = null;
+	}
+
+	lock() {
+		this.clearLockTimer();
 		super.lock();
 		this.clear();
 		this.emit("lock");
@@ -66,14 +77,11 @@ export class Engine extends Machine {
 		if (!ok) return ok;
 
 		if (!floating) this.stalls++;
+		if (this.lockTimer) this.clearLockTimer();
 		if (this.stalls >= this.maxStalls && !this.floating) {
 			this.stalls = 0;
 			this.lock();
 			this.spawn();
-		}
-		if (this.lockTimer) {
-			clearTimeout(this.lockTimer);
-			this.lockTimer = null;
 		}
 
 		return ok;

@@ -4,7 +4,7 @@ export const tetromino = fromConfig(
 	{
 		board: [10, 20],
 		spawns: [[3, 0]],
-		kickStore: {
+		kicks: {
 			I: [
 				{
 					left: [
