@@ -171,10 +171,11 @@ export const tetromino = fromConfig(
 				kicks: "JLTSZ",
 			},
 			{
-				offset: [1, 0],
 				shape: [
-					[1, 1],
-					[1, 1],
+					[0, 0, 0, 0],
+					[0, 1, 1, 0],
+					[0, 1, 1, 0],
+					[0, 0, 0, 0],
 				],
 				kicks: "O",
 			},

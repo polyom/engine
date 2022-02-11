@@ -8,12 +8,12 @@ export type Number4 = [number, number, number, number];
 export interface Piece {
 	shapes: Shape4;
 	kicks: Kick4;
+	size: Point;
 }
 
 export type Number2d = number[][];
 
 export type ConfigPiece = {
-	offset?: Point;
 	shape: (0 | 1)[][];
 	kicks: Kick4 | string;
 };
