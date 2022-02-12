@@ -66,9 +66,10 @@ export class Engine extends Machine {
 
 	lock() {
 		this.clearLockTimer();
-		super.lock();
+		const ok = super.lock();
 		this.clear();
-		this.emit("lock");
+		this.emit("lock", ok);
+		return ok;
 	}
 
 	stall(fn: () => boolean) {
@@ -127,6 +128,11 @@ export class Engine extends Machine {
 			this.move(0, 1);
 		}
 		this.emit("tick");
+	}
+
+	drop() {
+		super.drop();
+		this.start();
 	}
 
 	start(immediate = false, fall = this.fall) {

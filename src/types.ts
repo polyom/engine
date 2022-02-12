@@ -9,6 +9,7 @@ export interface Piece {
 	shapes: Shape4;
 	kicks: Kick4;
 	size: Point;
+	offset: Point;
 }
 
 export type Number2d = number[][];
@@ -16,6 +17,7 @@ export type Number2d = number[][];
 export type ConfigPiece = {
 	shape: (0 | 1)[][];
 	kicks: Kick4 | string;
+	offset?: Point;
 };
 
 export type Config = {
@@ -41,6 +43,6 @@ export type Events = {
 	spawn: ((i: number, ok: boolean) => void)[];
 	hold: ((ok: boolean) => void)[];
 	tick: (() => void)[];
-	lock: (() => void)[];
+	lock: ((ok: boolean) => void)[];
 	clear: ((lines: number[]) => void)[];
 };

@@ -63,7 +63,12 @@ export class Machine {
 		return this.set(this.x + dx, this.y + dy);
 	}
 
-	hardSet(x: number = this.x, y: number = this.y, d = this.d, i: number = this.i) {
+	hardSet(
+		x: number = this.x,
+		y: number = this.y,
+		d = this.d,
+		i: number = this.i
+	) {
 		(this.x = x), (this.y = y), (this.d = d), (this.i = i);
 	}
 
@@ -82,19 +87,19 @@ export class Machine {
 		return this.shape().every(([x, y]) => {
 			const bx = x + this.x,
 				by = y + this.y;
-			return (
-				bx >= 0 &&
-				by >= 0 &&
-				bx < this.width &&
-				by < this.height &&
-				this.board[by][bx] < 0
-			);
+			if (bx < 0 || bx >= this.width) return false;
+			if (by < 0) return true;
+			return by < this.height && this.board[by][bx] < 0;
 		});
 	}
 
 	lock() {
-		for (const [x, y] of this.shape())
-			this.board[this.y + y][this.x + x] = this.i;
+		let ok = true;
+		for (const [x, y] of this.shape()) {
+			if (this.y + y < 0) ok = false;
+			else this.board[this.y + y][this.x + x] = this.i;
+		}
+		return ok;
 	}
 
 	drop() {
@@ -104,7 +109,8 @@ export class Machine {
 	}
 
 	spawn(i: number = this.next()) {
-		return !!this.spawns.find(([x, y]) => this.set(x, y, 0, i));
+		const [ox, oy] = this.pieces[i].offset;
+		return !!this.spawns.find(([x, y]) => this.set(x + ox, y + oy, 0, i));
 	}
 
 	next() {
@@ -135,4 +141,6 @@ export class Machine {
 		}
 		return lines;
 	}
+
+	push() {}
 }

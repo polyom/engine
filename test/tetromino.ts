@@ -3,7 +3,11 @@ import { fromConfig } from "../src";
 export const tetromino = fromConfig(
 	{
 		board: [10, 20],
-		spawns: [[3, 0]],
+		spawns: [
+			[3, 0],
+			[3, -1],
+			[3, -2],
+		],
 		kicks: {
 			I: [
 				{
@@ -171,11 +175,10 @@ export const tetromino = fromConfig(
 				kicks: "JLTSZ",
 			},
 			{
+				offset: [1, 0],
 				shape: [
-					[0, 0, 0, 0],
-					[0, 1, 1, 0],
-					[0, 1, 1, 0],
-					[0, 0, 0, 0],
+					[1, 1],
+					[1, 1],
 				],
 				kicks: "O",
 			},
