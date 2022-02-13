@@ -1,7 +1,7 @@
 import { Direction, Kicks, Matrix, Piece, Shape, Vector } from "./types";
 import { Random } from "./Random";
-import { isValid } from "./internal/isValid";
-import { modulo } from "./internal/modulo";
+import { isValid } from "./internals/isValid";
+import { modulo } from "./internals/modulo";
 
 export class State {
 	x = 0;
