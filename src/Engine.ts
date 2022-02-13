@@ -1,7 +1,7 @@
 import { Listener } from ".";
 import { State } from "./State";
 
-export class Engine {
+export class Engine extends Listener<State> {
 	stalls = 0;
 	tickTimer = null as any;
 	lockTimer = null as any;
@@ -12,42 +12,37 @@ export class Engine {
 		public lockDelay = 500,
 		public maxStalls = 16
 	) {
-		const listener = new Listener(state);
+		super(state);
 		let floating = true;
 		let wasFloating = true;
 
-		listener.on("hold", () => {
+		this.on("hold", () => {
 			this.clearLockTimer();
 		});
 
-		listener.on("lock", () => {
+		this.on("lock", () => {
 			this.clearLockTimer();
 			this.state.clear();
 		});
 
-		listener.on("set", () => {
+		this.on("set", () => {
 			wasFloating = floating;
 			floating = this.state.isFloating();
 		});
 
-		listener.on("hardDrop", () => {
+		this.on("hardDrop", () => {
 			this.start();
 		});
 
 		const handler = (_: any, ok: boolean) => {
 			if (ok && !wasFloating) {
-				this.stalls++;
 				if (this.lockTimer) this.clearLockTimer();
-				if (this.stalls >= this.maxStalls && !this.state.isFloating()) {
-					this.stalls = 0;
-					this.state.lock();
-					this.state.spawn();
-				}
+				this.state.stall();
 			}
 		};
 
-		listener.on("slide", handler);
-		listener.on("rotate", handler);
+		this.on("slide", handler);
+		this.on("rotate", handler);
 	}
 
 	clearLockTimer() {

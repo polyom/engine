@@ -12,6 +12,7 @@ export class State {
 	board: Matrix;
 	queue: number[] = [];
 	canHold = true;
+	stalls = 0;
 
 	constructor(
 		public width: number,
@@ -19,7 +20,8 @@ export class State {
 		public pieces: Piece[],
 		public spawns: Vector[],
 		public random: Random,
-		public minQueue = 3
+		public minQueue = 3,
+		public maxStalls = 16
 	) {
 		this.board = Array(height)
 			.fill(null)
@@ -46,6 +48,15 @@ export class State {
 
 	getKicks(direction: Direction, id = this.current, angle = this.angle): Kicks {
 		return this.getPiece(id).kicks[modulo(angle, 4)][direction];
+	}
+
+	stall() {
+		this.stalls++;
+		if (this.stalls >= this.maxStalls && !this.isFloating()) {
+			this.stalls = 0;
+			this.lock();
+			this.spawn();
+		}
 	}
 
 	rotate(direction: Direction): boolean {

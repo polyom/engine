@@ -2,7 +2,7 @@ type Handler<T, This> = T extends (...args: any[]) => any
 	? (this: This, args: Parameters<T>, result: ReturnType<T>) => void
 	: never;
 
-export class Listener<T extends object> {
+export class Listener<T> {
 	handlers: any = {};
 
 	constructor(public instance: T) {}
