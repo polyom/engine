@@ -60,18 +60,17 @@ export class State {
 	}
 
 	rotate(direction: Direction): boolean {
-		return !!this.getKicks(direction).find(([x, y]) => {
-			return this.set(
+		return !!this.getKicks(direction).find(([x, y]) =>
+			this.move(
 				this.x + x,
 				this.y + y,
-				this.angle + (direction === "left" ? -1 : 1),
-				this.current
-			);
-		});
+				this.angle + (direction === "left" ? -1 : 1)
+			)
+		);
 	}
 
 	shift(dx: number, dy: number): boolean {
-		return this.set(this.x + dx, this.y + dy, this.angle, this.current);
+		return this.move(this.x + dx, this.y + dy, this.angle);
 	}
 
 	slide(dx: number) {
@@ -115,6 +114,10 @@ export class State {
 	summon(id: number): boolean {
 		const [ox, oy] = this.getPiece(id).offset;
 		return !!this.spawns.find(([x, y]) => this.set(x + ox, y + oy, 0, id));
+	}
+
+	move(x: number, y: number, angle: number) {
+		return this.set(x, y, angle, this.current);
 	}
 
 	set(x: number, y: number, angle: number, id: number): boolean {

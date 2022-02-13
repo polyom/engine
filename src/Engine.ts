@@ -2,7 +2,6 @@ import { Listener } from ".";
 import { State } from "./State";
 
 export class Engine extends Listener<State> {
-	stalls = 0;
 	tickTimer = null as any;
 	lockTimer = null as any;
 
@@ -10,7 +9,6 @@ export class Engine extends Listener<State> {
 		public state: State,
 		public fall = 1000,
 		public lockDelay = 500,
-		public maxStalls = 16
 	) {
 		super(state);
 		let floating = true;
