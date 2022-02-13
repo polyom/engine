@@ -14,7 +14,7 @@ export class Listener<T> {
 			const old = this.instance[key].bind(this.instance);
 			this.instance[key] = ((...args: unknown[]) => {
 				const result = old(...args);
-				for (const h of list) h(...args, result);
+				for (const h of list) h(args, result);
 				return result;
 			}) as any;
 		}
