@@ -77,36 +77,45 @@ export class State {
 		return this.shift(dx, 0);
 	}
 
-	lock() {
-		let ok = true;
-		this.canHold = true;
-		for (const [x, y] of this.getShape()) {
-			if (this.y + y < 0) ok = false;
-			else this.board[this.y + y][this.x + x] = this.current;
-		}
-		return ok;
+	print(x: number, y: number, id: number) {
+		if (y < 0) return false;
+		this.board[y][x] = id;
+		return true;
 	}
 
-	hardDrop() {
+	lock() {
+		this.canHold = true;
+		for (const [x, y] of this.getShape()) {
+			this.print(this.x + x, this.y + y, this.current);
+		}
+		return this.clear();
+	}
+
+	drop() {
 		while (this.shift(0, 1));
 		return this.lock() && this.spawn();
 	}
 
-	hold(): boolean {
-		if (!this.canHold) return false;
+	swap() {
 		const old = this.held;
 		this.held = this.current;
+		return old;
+	}
+
+	hold(): boolean {
+		if (!this.canHold) return false;
+		const old = this.swap();
 		this.canHold = false;
 		return old < 0 ? this.spawn() : this.summon(old);
 	}
 
-	append(id: number) {
+	push(id: number) {
 		this.queue.push(id);
 	}
 
 	spawn(): boolean {
 		while (this.queue.length <= this.minQueue) {
-			this.random.shuffle(this.pieces.keys()).forEach((id) => this.append(id));
+			this.random.shuffle(this.pieces.keys()).forEach((id) => this.push(id));
 		}
 		return this.summon(this.queue.shift()!);
 	}

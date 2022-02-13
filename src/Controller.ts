@@ -27,7 +27,7 @@ export class Controller {
 	startHardDrop() {
 		if (this.hardDrop) return;
 		this.hardDrop = true;
-		this.engine.state.hardDrop();
+		this.engine.state.drop();
 	}
 
 	stopHardDrop() {

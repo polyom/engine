@@ -5,11 +5,7 @@ export class Engine extends Listener<State> {
 	tickTimer = null as any;
 	lockTimer = null as any;
 
-	constructor(
-		public state: State,
-		public fall = 1000,
-		public lockDelay = 500,
-	) {
+	constructor(public state: State, public fall = 1000, public lockDelay = 500) {
 		super(state);
 		let floating = true;
 		let wasFloating = true;
@@ -28,7 +24,7 @@ export class Engine extends Listener<State> {
 			floating = this.state.isFloating();
 		});
 
-		this.on("hardDrop", () => {
+		this.on("drop", () => {
 			this.start();
 		});
 
