@@ -64,13 +64,14 @@ export class State {
 			return this.set(
 				this.x + x,
 				this.y + y,
-				this.angle + (direction === "left" ? -1 : 1)
+				this.angle + (direction === "left" ? -1 : 1),
+				this.current
 			);
 		});
 	}
 
 	shift(dx: number, dy: number): boolean {
-		return this.set(this.x + dx, this.y + dy);
+		return this.set(this.x + dx, this.y + dy, this.angle, this.current);
 	}
 
 	slide(dx: number) {
@@ -116,7 +117,7 @@ export class State {
 		return !!this.spawns.find(([x, y]) => this.set(x + ox, y + oy, 0, id));
 	}
 
-	set(x: number, y: number, angle = this.angle, id = this.current): boolean {
+	set(x: number, y: number, angle: number, id: number): boolean {
 		if (!isValid(x, y, this.getShape(id, angle), this.board)) return false;
 		this.x = x;
 		this.y = y;
