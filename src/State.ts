@@ -81,7 +81,7 @@ export class State {
 		let ok = true;
 		this.canHold = true;
 		for (const [x, y] of this.getShape()) {
-			if (this.y + y > this.board.length) ok = false;
+			if (this.y + y < 0) ok = false;
 			else this.board[this.y + y][this.x + x] = this.current;
 		}
 		return ok;
