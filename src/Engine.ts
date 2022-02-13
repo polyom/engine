@@ -1,62 +1,53 @@
-import { Machine } from "./Machine";
-import { Events } from "./types";
+import { Listener } from ".";
+import { State } from "./State";
 
-export class Engine extends Machine {
-	fall = 1000;
-	lockDelay = 500;
+export class Engine {
+	stalls = 0;
 	tickTimer = null as any;
 	lockTimer = null as any;
-	stalls = 0;
-	maxStalls = 16;
 
-	events: Events = {
-		hold: [],
-		clear: [],
-		move: [],
-		lock: [],
-		rotate: [],
-		tick: [],
-		spawn: [],
-		slide: [],
-		set: [],
-	};
-
-	hold() {
-		const ok = super.hold();
-		this.emit("hold", ok);
-		this.clearLockTimer();
-		return ok;
-	}
-
-	set(x = this.x, y = this.y, d = this.d, i = this.i) {
-		const ok = super.set(x, y, d, i);
-		this.emit("set", x, y, d, ok);
-		return ok;
-	}
-
-	spawn(i: number = this.next()) {
-		const ok = super.spawn(i);
-		this.emit("spawn", i, ok);
-		return ok;
-	}
-
-	emit<N extends keyof Events>(
-		name: N,
-		...args: Parameters<Events[N][number]>
+	constructor(
+		public state: State,
+		public fall = 1000,
+		public lockDelay = 500,
+		public maxStalls = 16
 	) {
-		// @ts-ignore
-		this.events[name].forEach((l) => l(...(args as any)));
-	}
+		const listener = new Listener(state);
+		let floating = true;
+		let wasFloating = true;
 
-	on<N extends keyof Events>(name: N, listener: Events[N][number]) {
-		this.events[name].push(listener as any);
-	}
+		listener.on("hold", () => {
+			this.clearLockTimer();
+		});
 
-	off<N extends keyof Events>(
-		name: N,
-		listener: Parameters<Events[N][number]>
-	) {
-		this.events[name].splice(this.events[name].indexOf(listener as any), 1);
+		listener.on("lock", () => {
+			this.clearLockTimer();
+			this.state.clear();
+		});
+
+		listener.on("set", () => {
+			wasFloating = floating;
+			floating = this.state.isFloating();
+		});
+
+		listener.on("hardDrop", () => {
+			this.start();
+		});
+
+		const handler = (_: any, ok: boolean) => {
+			if (ok && !wasFloating) {
+				this.stalls++;
+				if (this.lockTimer) this.clearLockTimer();
+				if (this.stalls >= this.maxStalls && !this.state.isFloating()) {
+					this.stalls = 0;
+					this.state.lock();
+					this.state.spawn();
+				}
+			}
+		};
+
+		listener.on("slide", handler);
+		listener.on("rotate", handler);
 	}
 
 	clearLockTimer() {
@@ -64,75 +55,17 @@ export class Engine extends Machine {
 		this.lockTimer = null;
 	}
 
-	lock() {
-		this.clearLockTimer();
-		const ok = super.lock();
-		this.clear();
-		this.emit("lock", ok);
-		return ok;
-	}
-
-	stall(fn: () => boolean) {
-		const { floating } = this;
-		const ok = fn();
-		if (!ok) return ok;
-
-		if (!floating) this.stalls++;
-		if (this.lockTimer) this.clearLockTimer();
-		if (this.stalls >= this.maxStalls && !this.floating) {
-			this.stalls = 0;
-			this.lock();
-			this.spawn();
-		}
-
-		return ok;
-	}
-
-	move(dx: number, dy: number) {
-		const ok = super.move(dx, dy);
-		this.emit("move", dx, dy, ok);
-		return ok;
-	}
-
-	clear() {
-		const lines = super.clear();
-		this.emit("clear", lines);
-		return lines;
-	}
-
-	slide(dx: number) {
-		return this.stall(() => {
-			const ok = super.move(dx, 0);
-			this.emit("slide", dx, ok);
-			return ok;
-		});
-	}
-
-	rotate(dd: number) {
-		return this.stall(() => {
-			const ok = super.rotate(dd);
-			this.emit("rotate", dd, ok);
-			return ok;
-		});
-	}
-
 	tick(immediate = false, fall = this.fall) {
 		this.tickTimer = setTimeout(() => this.tick(true, fall), fall);
 		if (!immediate) return;
-		if (!this.floating && !this.lockTimer) {
+		if (!this.state.isFloating() && !this.lockTimer) {
 			this.lockTimer = setTimeout(() => {
-				this.lock();
-				this.spawn();
+				this.state.lock();
+				this.state.spawn();
 			}, this.lockDelay);
 		} else {
-			this.move(0, 1);
+			this.state.shift(0, 1);
 		}
-		this.emit("tick");
-	}
-
-	drop() {
-		super.drop();
-		this.start();
 	}
 
 	start(immediate = false, fall = this.fall) {

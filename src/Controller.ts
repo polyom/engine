@@ -17,7 +17,7 @@ export class Controller {
 	startHold() {
 		if (this.hold) return;
 		this.hold = true;
-		return this.engine.hold();
+		this.engine.state.hold();
 	}
 
 	stopHold() {
@@ -27,7 +27,7 @@ export class Controller {
 	startHardDrop() {
 		if (this.hardDrop) return;
 		this.hardDrop = true;
-		return this.engine.drop();
+		this.engine.state.hardDrop();
 	}
 
 	stopHardDrop() {
@@ -43,7 +43,7 @@ export class Controller {
 			ms = this.handling.das;
 			dx = this.dx;
 		} else {
-			this.engine.slide(this.dx);
+			this.engine.state.slide(this.dx);
 		}
 
 		if (!this.arrTimer) {
@@ -60,47 +60,57 @@ export class Controller {
 		clearTimeout(this.arrTimer);
 		this.arrTimer = null;
 	}
+
 	startSlideLeft() {
 		if (this.slideLeft) return;
 		this.slideLeft = true;
 		this.dx = -1;
 		this.startSlide();
 	}
+
 	startSlideRight() {
 		if (this.slideRight) return;
 		this.slideRight = true;
 		this.dx = 1;
 		this.startSlide();
 	}
+
 	stopSlideLeft() {
 		this.slideLeft = false;
 		this.stopSlide();
 	}
+
 	stopSlideRight() {
 		this.slideRight = false;
 		this.stopSlide();
 	}
+
 	startRotateLeft() {
 		if (this.rotateLeft) return;
 		this.rotateLeft = true;
-		return this.engine.rotate(-1);
+		this.engine.state.rotate("left");
 	}
+
 	startRotateRight() {
 		if (this.rotateRight) return;
 		this.rotateRight = true;
-		return this.engine.rotate(1);
+		this.engine.state.rotate("right");
 	}
+
 	stopRotateLeft() {
 		this.rotateLeft = false;
 	}
+
 	stopRotateRight() {
 		this.rotateRight = false;
 	}
+
 	startSoftDrop() {
 		if (this.softDrop) return;
 		this.softDrop = true;
 		this.engine.start(true, this.engine.fall / this.handling.sdf);
 	}
+
 	stopSoftDrop() {
 		this.softDrop = false;
 		this.engine.start(false);

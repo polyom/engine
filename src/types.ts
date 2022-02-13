@@ -1,31 +1,17 @@
-export type Point = [x: number, y: number];
-export type Shape = Point[];
-export type Kick = { left: Point[]; right: Point[] };
-export type Kick4 = [Kick, Kick, Kick, Kick];
-export type Shape4 = [Shape, Shape, Shape, Shape];
-export type Number4 = [number, number, number, number];
+export type Vector = [x: number, y: number];
+export type Shape = Vector[];
+export type Kicks = Vector[];
+export type Cardinal<T> = [north: T, east: T, south: T, west: T];
+export type Matrix = number[][];
+export type Direction = "left" | "right";
+export type CardinalKicks = Cardinal<Record<Direction, Kicks>>;
 
 export interface Piece {
-	shapes: Shape4;
-	kicks: Kick4;
-	size: Point;
-	offset: Point;
+	size: Vector;
+	offset: Vector;
+	shapes: Cardinal<Shape>;
+	kicks: CardinalKicks;
 }
-
-export type Number2d = number[][];
-
-export type ConfigPiece = {
-	shape: (0 | 1)[][];
-	kicks: Kick4 | string;
-	offset?: Point;
-};
-
-export type Config = {
-	board: Point;
-	spawns: Point[];
-	kicks?: Record<string, Kick4>;
-	pieces: ConfigPiece[];
-};
 
 export type Handling = {
 	das: number; // delayed auto shift
@@ -35,14 +21,15 @@ export type Handling = {
 	crt: boolean; // cancel DAS on direction Change
 };
 
-export type Events = {
-	move: ((dx: number, dy: number, ok: boolean) => void)[];
-	rotate: ((dd: number, ok: boolean) => void)[];
-	set: ((x: number, y: number, d: number, ok: boolean) => void)[];
-	slide: ((dx: number, ok: boolean) => void)[];
-	spawn: ((i: number, ok: boolean) => void)[];
-	hold: ((ok: boolean) => void)[];
-	tick: (() => void)[];
-	lock: ((ok: boolean) => void)[];
-	clear: ((lines: number[]) => void)[];
-};
+export interface ConfigPiece {
+	shape: (0 | 1)[][];
+	kicks: CardinalKicks | string;
+	offset?: Vector;
+}
+
+export interface Config {
+	size: Vector;
+	spawns: Vector[];
+	kicks?: Record<string, CardinalKicks>;
+	pieces: ConfigPiece[];
+}
