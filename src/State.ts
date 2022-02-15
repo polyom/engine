@@ -63,7 +63,7 @@ export class State {
 		return !!this.getKicks(direction).find(([x, y]) =>
 			this.move(
 				this.x + x,
-				this.y + y,
+				this.y - y,
 				this.angle + (direction === "left" ? -1 : 1)
 			)
 		);
