@@ -1,0 +1,32 @@
+import { Engine } from "./Engine";
+import { Handling } from "./types";
+export declare class Controller {
+    engine: Engine;
+    handling: Handling;
+    dx: number;
+    arrTimer: any;
+    slideLeft: boolean;
+    slideRight: boolean;
+    softDrop: boolean;
+    rotateLeft: boolean;
+    rotateRight: boolean;
+    hold: boolean;
+    hardDrop: boolean;
+    constructor(engine: Engine, handling: Handling);
+    startHold(): void;
+    stopHold(): void;
+    startHardDrop(): void;
+    stopHardDrop(): void;
+    startSlide(ms?: number, dx?: number): void;
+    stopSlide(): void;
+    startSlideLeft(): void;
+    startSlideRight(): void;
+    stopSlideLeft(): void;
+    stopSlideRight(): void;
+    startRotateLeft(): void;
+    startRotateRight(): void;
+    stopRotateLeft(): void;
+    stopRotateRight(): void;
+    startSoftDrop(): void;
+    stopSoftDrop(): void;
+}
